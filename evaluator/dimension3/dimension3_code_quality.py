@@ -4,7 +4,6 @@ import ast
 from collections import Counter
 from pathlib import Path
 from typing import Any
-import warnings
 
 
 RESPONSIBILITY_KEYWORDS = {
@@ -513,28 +512,8 @@ def score_code_quality(
     lint_errors: int = 0,
     code_path: Path | str | None = None,
 ) -> float:
-    """兼容旧接口，同时支持基于代码文件的维度3评分。
-
-    - 旧接口（main_evaluator 当前调用方式）：
-      score_code_quality(has_docstring=True, has_type_hints=True, lint_errors=0)
-    - 新接口：
-      score_code_quality(code_path="path/to/code.py")
-    """
+    """基于代码文件的维度3评分接口。"""
     if code_path is not None:
         result = evaluate_dimension3_code_quality(code_path)
         return result["score_normalized"]
-
-    # 旧逻辑保留，避免破坏现有调用。
-    warnings.warn(
-        "score_code_quality() 未传入 code_path，已回退到旧版占位评分逻辑。"
-        "建议改为 score_code_quality(code_path=...) 以使用维度3正式评分规则。",
-        RuntimeWarning,
-        stacklevel=2,
-    )
-    base = 0.4
-    if has_docstring:
-        base += 0.2
-    if has_type_hints:
-        base += 0.2
-    base -= min(0.4, lint_errors * 0.05)
-    return max(0.0, min(1.0, base))
+    raise ValueError("score_code_quality() requires code_path.")
