@@ -1,0 +1,7 @@
+game_id: easy_flappy_bird
+dimension: functionality
+test_ports:
+  - flap_input
+  - gravity_motion
+  - pipe_scoring
+  - collision_end

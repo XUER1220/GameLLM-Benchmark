@@ -1,0 +1,8 @@
+game_id: medium_pacman
+dimension: functionality
+test_ports:
+  - grid_direction_control
+  - pellet_scoring
+  - power_pellet_state
+  - ghost_behavior
+  - win_loss

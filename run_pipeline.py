@@ -60,12 +60,13 @@ def _build_indicator_list(scores: dict, max_scores: dict | None = None) -> list[
     return items
 
 
-def evaluate_code(game_name: str, code_path: Path, weights: dict) -> dict:
+def evaluate_code(game_name: str, code_path: Path, weights: dict, difficulty: str | None = None) -> dict:
     d1_result = evaluate_dimension1(code_path)
     d1_score = float(d1_result["score"])
 
     runtime_signals = _build_runtime_signals_from_dim1(d1_result)
-    d2_result = evaluate_dimension2(game_id=game_name, code_path=code_path, runtime_signals=runtime_signals)
+    game_id = f"{difficulty}_{game_name}" if difficulty else game_name
+    d2_result = evaluate_dimension2(game_id=game_id, code_path=code_path, runtime_signals=runtime_signals)
     d2_score = float(d2_result.score)
 
     d3_result = evaluate_dimension3_code_quality(code_path)
@@ -246,7 +247,7 @@ def main():
                 print(f"    -> 代码已保存: {code_filename}")
 
                 print("    -> 开始评分...")
-                scores = evaluate_code(game_name, code_path, weights)
+                scores = evaluate_code(game_name, code_path, weights, difficulty=difficulty)
 
                 result = {
                     "game": game_name,

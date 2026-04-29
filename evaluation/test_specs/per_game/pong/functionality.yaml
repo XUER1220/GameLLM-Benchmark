@@ -1,0 +1,7 @@
+game_id: easy_pong
+dimension: functionality
+test_ports:
+  - paddle_control
+  - ball_motion
+  - bounce_and_score
+  - point_or_game_end

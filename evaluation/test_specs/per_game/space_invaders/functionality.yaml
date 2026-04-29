@@ -1,0 +1,7 @@
+game_id: medium_space_invaders
+dimension: functionality
+test_ports:
+  - ship_control_fire
+  - enemy_wave_motion
+  - hit_score
+  - lives_and_end

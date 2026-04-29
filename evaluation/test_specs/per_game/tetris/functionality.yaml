@@ -1,0 +1,7 @@
+game_id: medium_tetris
+dimension: functionality
+test_ports:
+  - piece_control
+  - gravity_drop
+  - lock_and_lines
+  - spawn_collision_end

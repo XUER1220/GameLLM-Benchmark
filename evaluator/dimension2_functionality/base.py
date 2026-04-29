@@ -9,6 +9,7 @@ class FunctionalityResult:
     criteria_scores: dict[str, int] = field(default_factory=dict)
     reasons: dict[str, str] = field(default_factory=dict)
     evidence: dict[str, Any] = field(default_factory=dict)
+    specialized_items: dict[str, Any] = field(default_factory=dict)
 
     @property
     def score(self) -> float:
@@ -24,4 +25,5 @@ class FunctionalityResult:
             "criteria_scores": self.criteria_scores,
             "reasons": self.reasons,
             "evidence": self.evidence,
+            "specialized_items": self.specialized_items,
         }

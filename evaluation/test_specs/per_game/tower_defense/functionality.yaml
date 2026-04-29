@@ -1,0 +1,8 @@
+game_id: hard_tower_defense
+dimension: functionality
+test_ports:
+  - tower_build_input
+  - enemy_path_waves
+  - tower_attack_rules
+  - economy_upgrade
+  - base_life_victory_loss

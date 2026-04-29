@@ -1,0 +1,7 @@
+game_id: easy_dodge_blocks
+dimension: functionality
+test_ports:
+  - player_movement
+  - falling_obstacles
+  - avoidance_rule
+  - survival_feedback

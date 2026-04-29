@@ -1,0 +1,7 @@
+game_id: easy_snake
+dimension: functionality
+test_ports:
+  - direction_control
+  - food_growth
+  - score_feedback
+  - wall_or_self_end

@@ -1,0 +1,8 @@
+game_id: hard_roguelike_dungeon
+dimension: functionality
+test_ports:
+  - turn_input
+  - dungeon_generation
+  - combat_xp_level
+  - items
+  - floor_or_death_end

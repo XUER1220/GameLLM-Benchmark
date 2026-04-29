@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from .base import FunctionalityResult
+from .profile_engine import evaluate_profiled_functionality
 
 CRITERIA = (
     "rule_completeness",
@@ -51,29 +52,47 @@ RUNTIME_KEYS = {
 GAME_MODULE_ROUTE = {
     "easy_dodge_blocks": "easy_dodge_blocks",
     "easy_flappy_bird": "easy_flappy_bird",
-    "easy_maze_runner": "easy_maze_runner",
     "easy_pong": "easy_pong",
     "easy_snake": "easy_snake",
-    "medium_breakout": "medium_breakout",
+    "medium_pacman": "medium_pacman",
     "medium_space_invaders": "medium_space_invaders",
+    "medium_super_mario_bros_1_1": "medium_super_mario_bros_1_1",
     "medium_tetris": "medium_tetris",
-    "hard_platformer": "hard_platformer",
     "hard_roguelike_dungeon": "hard_roguelike_dungeon",
+    "hard_tower_defense": "hard_tower_defense",
 }
 
 
 def evaluate_dimension2(
     game_id: str,
     code_path: Path | str,
-    runtime_signals: dict[str, bool] | None = None,
+    runtime_signals: dict[str, Any] | None = None,
 ) -> FunctionalityResult:
     """Unified entry for dimension2.
 
-    For now this returns the cross-game generic score only. Per-game logic
-    can be plugged in later behind this entry without changing callers.
+    The primary path uses per-game test-port profiles. The legacy generic
+    scorer remains as a fallback for unmapped games or profiles.
     """
-    # 先尝试路由到游戏独立文件；若未实现则回退通用评分。
     module_name = _resolve_game_module_name(game_id)
+
+    profile_result = evaluate_profiled_functionality(
+        game_id=module_name or _normalize_game_id(game_id),
+        code_path=code_path,
+        runtime_signals=runtime_signals,
+    )
+    if profile_result is not None:
+        profile_result.evidence.setdefault(
+            "route",
+            {
+                "module": module_name,
+                "used_game_specific": True,
+                "status": "profiled_test_ports",
+                "reason": "ok:profile",
+            },
+        )
+        return profile_result
+
+    # 先尝试路由到游戏独立文件；若未实现则回退通用评分。
     game_specific_result, route_meta = _call_game_specific_evaluator(
         module_name=module_name,
         game_id=game_id,
@@ -210,6 +229,14 @@ def _resolve_game_module_name(game_id: str) -> str | None:
         if normalized == f"{game}_{difficulty}":
             return module_name
 
+    matching_modules = [
+        module_name
+        for key, module_name in GAME_MODULE_ROUTE.items()
+        if normalized == key.split("_", 1)[1]
+    ]
+    if len(matching_modules) == 1:
+        return matching_modules[0]
+
     return None
 
 
@@ -296,6 +323,7 @@ def _coerce_result(result: Any) -> FunctionalityResult:
             criteria_scores=result.get("criteria_scores", {}),
             reasons=result.get("reasons", {}),
             evidence=result.get("evidence", {}),
+            specialized_items=result.get("specialized_items", {}),
         )
 
     return FunctionalityResult(passed=0, total=10)
