@@ -1,7 +1,0 @@
-game_id: medium_super_mario_bros_1_1
-dimension: functionality
-test_ports:
-  - run_jump_control
-  - scrolling_world
-  - block_coin_enemy_rules
-  - pit_life_flag_end

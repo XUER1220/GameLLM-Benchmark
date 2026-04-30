@@ -56,7 +56,7 @@ GAME_MODULE_ROUTE = {
     "easy_snake": "easy_snake",
     "medium_pacman": "medium_pacman",
     "medium_space_invaders": "medium_space_invaders",
-    "medium_super_mario_bros_1_1": "medium_super_mario_bros_1_1",
+    "medium_super_mario_bros": "medium_super_mario_bros",
     "medium_tetris": "medium_tetris",
     "hard_roguelike_dungeon": "hard_roguelike_dungeon",
     "hard_tower_defense": "hard_tower_defense",

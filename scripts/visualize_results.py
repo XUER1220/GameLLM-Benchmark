@@ -190,6 +190,8 @@ def build_frames(results: list[dict[str, Any]]) -> tuple[pd.DataFrame, pd.DataFr
             "model_short": short_model_name(str(item.get("model", ""))),
             "provider": item.get("provider", ""),
             "timestamp": item.get("timestamp", ""),
+            "run_id": item.get("run_id", item.get("timestamp", "")),
+            "repeat": item.get("repeat", ""),
             "total_score": float(scores.get("total_score", 0.0)),
         }
 
@@ -201,7 +203,18 @@ def build_frames(results: list[dict[str, Any]]) -> tuple[pd.DataFrame, pd.DataFr
             for row in iter_indicators(dimension_data, key):
                 indicator_rows.append(
                     {
-                        **{k: base[k] for k in ("game", "difficulty", "model", "model_short", "timestamp")},
+                        **{
+                            k: base[k]
+                            for k in (
+                                "game",
+                                "difficulty",
+                                "model",
+                                "model_short",
+                                "timestamp",
+                                "run_id",
+                                "repeat",
+                            )
+                        },
                         "dimension": label,
                         **row,
                     }

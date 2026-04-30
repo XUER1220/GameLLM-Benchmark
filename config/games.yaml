@@ -12,7 +12,7 @@ games:
     - tetris             # 俄罗斯方块：空间摆放、短期规划、局面判断
     - space_invaders     # 太空入侵者：射击、闪避、多目标管理
     - pacman             # 吃豆人：迷宫移动、追逐规避、道具时机
-    - super_mario_bros_1_1 # 超级马里奥兄弟 1-1：单关横向卷轴、基础物理、敌人与旗杆
+    - super_mario_bros   # Super Mario Bros：单关横向卷轴、基础物理、敌人与旗杆
   
   hard:
     - roguelike_dungeon  # Roguelike地牢：探索、战斗、资源管理

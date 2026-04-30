@@ -5,7 +5,7 @@
 示例：
 - `prompts/easy/snake/prompt.txt`
 - `prompts/medium/tetris/prompt.txt`
-- `prompts/medium/super_mario_bros_1_1/prompt.txt`
+- `prompts/medium/super_mario_bros/prompt.txt`
 - `prompts/hard/tower_defense/prompt.txt`
 
 为了保证不同模型之间的输出稳定性与对比公平性，所有游戏提示词建议统一遵循以下原则：

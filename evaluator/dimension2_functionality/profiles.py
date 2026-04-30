@@ -430,9 +430,9 @@ GAME_PROFILES: dict[str, GameProfile] = {
             ),
         ),
     ),
-    "medium_super_mario_bros_1_1": GameProfile(
-        game_id="medium_super_mario_bros_1_1",
-        display_name="Super Mario Bros 1-1 Medium",
+    "medium_super_mario_bros": GameProfile(
+        game_id="medium_super_mario_bros",
+        display_name="Super Mario Bros Medium",
         test_ports=(
             TestPort(
                 "run_jump_control",

@@ -11,13 +11,13 @@
 | `medium_tetris` | `piece_control`, `gravity_drop`, `lock_and_lines`, `spawn_collision_end` |
 | `medium_space_invaders` | `ship_control_fire`, `enemy_wave_motion`, `hit_score`, `lives_and_end` |
 | `medium_pacman` | `grid_direction_control`, `pellet_scoring`, `power_pellet_state`, `ghost_behavior`, `win_loss` |
-| `medium_super_mario_bros_1_1` | `run_jump_control`, `scrolling_world`, `block_coin_enemy_rules`, `pit_life_flag_end` |
+| `medium_super_mario_bros` | `run_jump_control`, `scrolling_world`, `block_coin_enemy_rules`, `pit_life_flag_end` |
 | `hard_roguelike_dungeon` | `turn_input`, `dungeon_generation`, `combat_xp_level`, `items`, `floor_or_death_end` |
 | `hard_tower_defense` | `tower_build_input`, `enemy_path_waves`, `tower_attack_rules`, `economy_upgrade`, `base_life_victory_loss` |
 
 ## Difficulty Notes
 
-`medium_super_mario_bros_1_1` is kept in Medium because its required rules are a single fixed side-scrolling level with jump physics, camera scrolling, coins, simple patrol enemies, pits, lives, and a flag finish. It deliberately excludes Hard-level rule complexity such as power-up state transitions, hidden blocks, fireballs, multi-level progression, complex enemy AI, external sprites, audio, and animation systems.
+`medium_super_mario_bros` is kept in Medium because its required rules are a single fixed side-scrolling level with jump physics, camera scrolling, coins, simple patrol enemies, pits, lives, and a flag finish. It deliberately excludes Hard-level rule complexity such as power-up state transitions, hidden blocks, fireballs, multi-level progression, complex enemy AI, external sprites, audio, and animation systems.
 
 未来若增加真正的动态测试，可向 D2 入口传入：
 
