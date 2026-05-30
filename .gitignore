@@ -2,3 +2,12 @@ __pycache__/
 *.pyc
 .env
 *.env
+
+# Pipeline outputs are generated locally. Existing tracked experiment snapshots
+# remain available, while new runs stay out of normal source changes.
+data/raw/*
+!data/raw/.gitkeep
+data/scores/*
+!data/scores/.gitkeep
+analysis/figures/*
+!analysis/figures/.gitkeep

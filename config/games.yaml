@@ -3,17 +3,17 @@
 
 games:
   easy:
-    - snake              # 贪吃蛇：基础移动、路径规划、避障
-    - flappy_bird        # Flappy Bird：时机控制、单按键节奏、容错低
-    - dodge_blocks       # 躲避方块：实时反应、移动控制、碰撞避免
-    - pong               # 乒乓球：反应速度、预判、连续跟踪
+    - snake              # Prism Relay：延迟残留障碍
+    - flappy_bird        # Pulse Gates：间隙脉冲球
+    - dodge_blocks       # Lane Cipher：固定车道与芯片
+    - pong               # Gate Rally：指定得分门
   
   medium:
-    - tetris             # 俄罗斯方块：空间摆放、短期规划、局面判断
-    - space_invaders     # 太空入侵者：射击、闪避、多目标管理
-    - pacman             # 吃豆人：迷宫移动、追逐规避、道具时机
-    - super_mario_bros   # Super Mario Bros：单关横向卷轴、基础物理、敌人与旗杆
+    - tetris             # Glyph Stack：自定义五格块
+    - space_invaders     # Polarity Fleet：双色极性射击
+    - pacman             # Switch Maze：顺序开门
+    - super_mario_bros   # Beacon Courier：电池锁定出口
   
   hard:
-    - roguelike_dungeon  # Roguelike地牢：探索、战斗、资源管理
-    - tower_defense      # 塔防：路径防守、资源分配、波次管理
+    - roguelike_dungeon  # Rune Vault：双层顺序符文
+    - tower_defense      # Relay Defense：双色护盾克制

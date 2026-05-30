@@ -1,22 +1,24 @@
-# Prompt 放置规范
+# Prompt Layout
 
-推荐使用分层路径：`prompts/<difficulty>/<game>/prompt.txt`
+模型实际接收的任务文件固定为：
 
-示例：
-- `prompts/easy/snake/prompt.txt`
-- `prompts/medium/tetris/prompt.txt`
-- `prompts/medium/super_mario_bros/prompt.txt`
-- `prompts/hard/tower_defense/prompt.txt`
+`prompts/<difficulty>/<game>/prompt.txt`
 
-为了保证不同模型之间的输出稳定性与对比公平性，所有游戏提示词建议统一遵循以下原则：
+统一结构和编写口径见 `STRICT_PROMPT_TEMPLATE.md`。
 
-1. 固定技术栈：默认要求使用 `Python 3 + pygame`，单文件实现。
-2. 固定输出格式：要求模型只输出完整可执行代码，不输出解释、Markdown、代码块标记。
-3. 固定窗口参数：默认使用 `800x600` 画布与 `60 FPS`，特殊玩法也尽量在此窗口内布局。
-4. 固定随机性：凡涉及随机生成，统一要求 `random.seed(42)`，避免同一任务在不同运行中差异过大。
-5. 固定主体尺寸：玩家、敌人、障碍物、砖块、网格单元等都应给出明确像素尺寸或网格规格。
-6. 固定规则口径：移动速度、跳跃高度、刷新频率、碰撞条件、得分方式、胜负条件都应写清楚。
-7. 固定交互约束：统一要求支持窗口关闭、`R` 重开、`ESC` 退出，并显示必要 HUD。
-8. 固定资源边界：禁止依赖本地图片、音频、字体或外部文件，全部使用代码内绘制。
+## Enabled Tasks
 
-当前仓库中的各游戏 `prompt.txt` 已按上述思路进行了统一强化。
+| Difficulty | Game ID | Distinctive rule |
+|---|---|---|
+| easy | `snake` | 每第三个信标会留下延迟激活的残留障碍 |
+| easy | `flappy_bird` | 必须穿过管道间隙中的脉冲球，漏球立即失败 |
+| easy | `dodge_blocks` | 固定车道移动，并穿插可收集的金色芯片 |
+| easy | `pong` | 出界位置必须命中本回合指定得分门 |
+| medium | `tetris` | 使用自定义五格符文块和通量单元，不使用标准七种方块 |
+| medium | `space_invaders` | 玩家需要切换弹药极性匹配敌人颜色 |
+| medium | `pacman` | 固定迷宫包含有顺序要求的开门开关 |
+| medium | `super_mario_bros` | 横向卷轴出口需要先收集四个电池 |
+| hard | `roguelike_dungeon` | 固定双层地牢中必须按顺序激活符文 |
+| hard | `tower_defense` | 敌人具有双色护盾，塔型与护盾形成克制 |
+
+每个 `prompt.txt` 必须完整自包含。流水线不会拼接公共模板，因此公共执行契约也要写入每个文件。

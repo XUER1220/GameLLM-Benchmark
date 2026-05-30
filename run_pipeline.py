@@ -5,15 +5,11 @@ from pathlib import Path
 
 import yaml
 
-# from llm_clients.client_openai import call_openai
-from config import ROOT_DIR
+from config import DATA_RAW_DIR, DATA_SCORES_DIR, DEFAULT_WEIGHTS, PROMPTS_DIR, ROOT_DIR
 from evaluator.dimension1.dimension1_executable import evaluate_dimension1
 from evaluator.dimension2_functionality import evaluate_dimension2
 from evaluator.dimension3.dimension3_code_quality import evaluate_dimension3_code_quality
 from evaluator.dimension4.dimension4_ux import evaluate_dimension4_ux
-from llm_clients.client_anthropic import call_anthropic
-from llm_clients.client_bedrock import call_bedrock
-from llm_clients.client_qwen_or_gemini import call_gemini, call_qwen
 
 
 def load_config(config_file: Path) -> dict:
@@ -23,14 +19,24 @@ def load_config(config_file: Path) -> dict:
 
 def call_llm(provider: str, model: str, prompt: str) -> str:
     if provider == "openai":
+        from llm_clients.client_openai import call_openai
+
         return call_openai(prompt, model)
     if provider == "anthropic":
+        from llm_clients.client_anthropic import call_anthropic
+
         return call_anthropic(prompt, model)
     if provider == "qwen":
+        from llm_clients.client_qwen_or_gemini import call_qwen
+
         return call_qwen(prompt, model)
     if provider == "gemini":
+        from llm_clients.client_qwen_or_gemini import call_gemini
+
         return call_gemini(prompt, model)
     if provider == "bedrock":
+        from llm_clients.client_bedrock import call_bedrock
+
         return call_bedrock(prompt, model)
     raise ValueError(f"不支持的 provider: {provider}")
 
@@ -185,7 +191,7 @@ def main():
     config_dir = ROOT_DIR / "config"
     games_config = load_config(config_dir / "games.yaml")
     models_config = load_config(config_dir / "models.yaml")
-    weights_config = load_config(config_dir / "weights.yaml")
+    weights_config = load_config(DEFAULT_WEIGHTS)
 
     weights = dict(weights_config["dimension_weights"])
     weights.update(
@@ -198,8 +204,8 @@ def main():
     )
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    raw_dir = ROOT_DIR / "data" / "raw" / timestamp
-    scores_dir = ROOT_DIR / "data" / "scores" / timestamp
+    raw_dir = DATA_RAW_DIR / timestamp
+    scores_dir = DATA_SCORES_DIR / timestamp
     raw_dir.mkdir(parents=True, exist_ok=True)
     scores_dir.mkdir(parents=True, exist_ok=True)
 
@@ -216,7 +222,7 @@ def main():
     for game_info in all_games:
         difficulty = game_info["difficulty"]
         game_name = game_info["name"]
-        prompt_file = ROOT_DIR / "prompts" / difficulty / game_name / "prompt.txt"
+        prompt_file = PROMPTS_DIR / difficulty / game_name / "prompt.txt"
 
         if not prompt_file.exists():
             print(f"[SKIP] 跳过 {game_name}，prompt 文件不存在")
