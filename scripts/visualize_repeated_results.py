@@ -121,9 +121,9 @@ def plot_run_mean_trend(df: pd.DataFrame, out_dir: Path) -> None:
         errorbar=None,
         palette="Set2",
     )
-    ax.set_title("Mean Score Across Repeats")
-    ax.set_xlabel("Repeat")
-    ax.set_ylabel("Mean Total Score")
+    ax.set_title("")
+    ax.set_xlabel("重复次数")
+    ax.set_ylabel("平均总得分")
     ax.set_ylim(0, 1)
     ax.legend(title="")
     single_run.save_figure(out_dir / "07_repeat_mean_score_trend.png")
@@ -149,9 +149,9 @@ def plot_model_score_distribution(df: pd.DataFrame, out_dir: Path) -> None:
         jitter=0.22,
         ax=ax,
     )
-    ax.set_title("Score Distribution Across Repeats")
+    ax.set_title("")
     ax.set_xlabel("")
-    ax.set_ylabel("Total Score")
+    ax.set_ylabel("总得分")
     ax.set_ylim(0, 1)
     single_run.save_figure(out_dir / "08_repeat_score_distribution.png")
 
@@ -171,7 +171,7 @@ def plot_run_variability_heatmap(df: pd.DataFrame, out_dir: Path) -> None:
 
     plt.figure(figsize=(9, max(4.5, len(variability) * 0.45)))
     ax = sns.heatmap(variability, annot=True, fmt=".3f", cmap="rocket_r", linewidths=0.5)
-    ax.set_title("Run-to-Run Score Std. Dev.")
+    ax.set_title("")
     ax.set_xlabel("")
     ax.set_ylabel("")
     single_run.save_figure(out_dir / "09_repeat_score_std_heatmap.png")

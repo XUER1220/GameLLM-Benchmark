@@ -229,6 +229,8 @@ def setup_style() -> None:
     sns.set_theme(style="whitegrid", context="talk")
     plt.rcParams.update(
         {
+            "font.sans-serif": ["Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Arial Unicode MS", "DejaVu Sans"],
+            "axes.unicode_minus": False,
             "figure.dpi": 140,
             "savefig.dpi": 220,
             "axes.titleweight": "bold",
@@ -249,20 +251,59 @@ def save_figure(path: Path) -> None:
 
 
 def plot_overall_ranking(df: pd.DataFrame, out_dir: Path) -> None:
-    ranking = (
-        df.groupby("model_short", as_index=False)["total_score"]
-        .mean()
-        .sort_values("total_score", ascending=True)
-    )
+    ranking = df.groupby("model_short", as_index=False)["total_score"].mean()
+    preferred_order = ["DeepSeek V3.2", "Nova Pro", "Qwen Coder"]
+    remaining = [name for name in ranking["model_short"] if name not in preferred_order]
+    model_order = preferred_order + sorted(set(remaining))
+    ranking["model_short"] = pd.Categorical(ranking["model_short"], categories=model_order, ordered=True)
+    ranking = ranking.sort_values("model_short")
+
     plt.figure(figsize=(8.5, 4.8))
-    ax = sns.barplot(data=ranking, x="total_score", y="model_short", hue="model_short", palette="Set2", legend=False)
-    ax.set_title("Overall Model Ranking")
-    ax.set_xlabel("Mean Total Score")
-    ax.set_ylabel("")
-    ax.set_xlim(0, max(1.0, float(ranking["total_score"].max()) * 1.12))
+    ax = sns.barplot(
+        data=ranking,
+        x="model_short",
+        y="total_score",
+        hue="model_short",
+        palette="Set2",
+        legend=False,
+        order=model_order,
+    )
+    ax.set_title("")
+    ax.set_xlabel("")
+    ax.set_ylabel("平均总得分")
+    ax.set_ylim(0, max(1.0, float(ranking["total_score"].max()) * 1.12))
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=15, ha="right")
     for container in ax.containers:
         ax.bar_label(container, fmt="%.3f", padding=4, fontsize=9)
     save_figure(out_dir / "01_overall_model_ranking.png")
+
+
+def plot_overall_ranking_vertical(df: pd.DataFrame, out_dir: Path) -> None:
+    ranking = df.groupby("model_short", as_index=False)["total_score"].mean()
+    preferred_order = ["DeepSeek V3.2", "Nova Pro", "Qwen Coder"]
+    remaining = [name for name in ranking["model_short"] if name not in preferred_order]
+    model_order = preferred_order + sorted(set(remaining))
+    ranking["model_short"] = pd.Categorical(ranking["model_short"], categories=model_order, ordered=True)
+    ranking = ranking.sort_values("model_short")
+
+    plt.figure(figsize=(8.5, 4.8))
+    ax = sns.barplot(
+        data=ranking,
+        x="model_short",
+        y="total_score",
+        hue="model_short",
+        palette="Set2",
+        legend=False,
+        order=model_order,
+    )
+    ax.set_title("")
+    ax.set_xlabel("")
+    ax.set_ylabel("平均总得分")
+    ax.set_ylim(0, max(1.0, float(ranking["total_score"].max()) * 1.12))
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=15, ha="right")
+    for container in ax.containers:
+        ax.bar_label(container, fmt="%.3f", padding=4, fontsize=9)
+    save_figure(out_dir / "01b_overall_model_ranking_vertical.png")
 
 
 def plot_model_game_heatmap(df: pd.DataFrame, out_dir: Path) -> None:
@@ -270,7 +311,7 @@ def plot_model_game_heatmap(df: pd.DataFrame, out_dir: Path) -> None:
     pivot = pivot.loc[pivot.mean(axis=1).sort_values(ascending=False).index]
     plt.figure(figsize=(9, max(4.5, len(pivot) * 0.45)))
     ax = sns.heatmap(pivot, annot=True, fmt=".2f", cmap="viridis", vmin=0, vmax=1, linewidths=0.5)
-    ax.set_title("Model Performance by Game")
+    ax.set_title("")
     ax.set_xlabel("")
     ax.set_ylabel("")
     save_figure(out_dir / "02_model_game_heatmap.png")
@@ -280,11 +321,31 @@ def plot_dimension_profile(df: pd.DataFrame, out_dir: Path) -> None:
     dim_cols = list(DIMENSIONS.values())
     profile = df.groupby("model_short", as_index=False)[dim_cols].mean()
     long = profile.melt(id_vars="model_short", var_name="dimension", value_name="score")
+    dimension_labels = {
+        "Executability": "代码可执行性",
+        "Functionality": "游戏功能完整性",
+        "Code Quality": "代码质量",
+        "UX": "用户体验",
+    }
+    long["dimension"] = long["dimension"].map(dimension_labels).fillna(long["dimension"])
+    dimension_order = [
+        "代码可执行性",
+        "游戏功能完整性",
+        "代码质量",
+        "用户体验",
+    ]
     plt.figure(figsize=(10, 5))
-    ax = sns.barplot(data=long, x="dimension", y="score", hue="model_short", palette="Set2")
-    ax.set_title("Capability Profile by Dimension")
+    ax = sns.barplot(
+        data=long,
+        x="dimension",
+        y="score",
+        hue="model_short",
+        palette="Set2",
+        order=dimension_order,
+    )
+    ax.set_title("")
     ax.set_xlabel("")
-    ax.set_ylabel("Mean Score")
+    ax.set_ylabel("平均得分")
     ax.set_ylim(0, 1)
     ax.legend(title="")
     save_figure(out_dir / "03_dimension_profile.png")
@@ -295,9 +356,9 @@ def plot_weighted_contributions(df: pd.DataFrame, out_dir: Path) -> None:
     model_contrib = df.groupby("model_short")[contribution_cols].mean()
     model_contrib.columns = list(DIMENSIONS.values())
     ax = model_contrib.plot(kind="bar", stacked=True, figsize=(9, 5), color=sns.color_palette("Set2", 4))
-    ax.set_title("Weighted Score Contributions")
+    ax.set_title("")
     ax.set_xlabel("")
-    ax.set_ylabel("Mean Weighted Contribution")
+    ax.set_ylabel("平均加权贡献")
     ax.set_ylim(0, max(1.0, float(model_contrib.sum(axis=1).max()) * 1.15))
     ax.legend(title="", bbox_to_anchor=(1.02, 1), loc="upper left")
     save_figure(out_dir / "04_weighted_score_contributions.png")
@@ -323,9 +384,9 @@ def plot_difficulty_trend(df: pd.DataFrame, out_dir: Path) -> None:
         linewidth=2.3,
         palette="Set2",
     )
-    ax.set_title("Performance Across Difficulty Levels")
+    ax.set_title("")
     ax.set_xlabel("")
-    ax.set_ylabel("Mean Total Score")
+    ax.set_ylabel("平均总得分")
     ax.set_ylim(0, 1)
     ax.legend(title="")
     save_figure(out_dir / "05_difficulty_trend.png")
@@ -335,15 +396,82 @@ def plot_indicator_heatmaps(indicators: pd.DataFrame, out_dir: Path) -> None:
     if indicators.empty:
         return
 
+    indicator_orders = {
+        "Executability": [
+            "python_syntax_correct",
+            "short_runtime_stable",
+            "dependency_initialization_complete",
+            "window_creation",
+            "event_handling_mechanism",
+            "process_controllability",
+        ],
+        "Functionality": [
+            "rule_completeness",
+            "state_evolution",
+            "interaction_validity",
+            "goal_feedback_alignment",
+            "constraint_termination",
+        ],
+        "Code Quality": [
+            "modularity",
+            "reuse",
+            "naming",
+            "comments",
+            "constants",
+            "complexity",
+        ],
+        "UX": [
+            "visual",
+            "smoothness",
+            "balance",
+            "audio_animation",
+        ],
+    }
+    indicator_labels = {
+        "python_syntax_correct": "Python 语法正确性",
+        "short_runtime_stable": "短时间运行稳定性",
+        "dependency_initialization_complete": "依赖初始化完整性",
+        "window_creation": "图形窗口创建能力",
+        "event_handling_mechanism": "事件处理机制完整性",
+        "process_controllability": "执行进程可控性",
+        "rule_completeness": "规则闭合性",
+        "state_evolution": "状态演化性",
+        "interaction_validity": "交互有效性",
+        "goal_feedback_alignment": "目标与反馈一致性",
+        "constraint_termination": "约束与终止机制",
+        "modularity": "模块划分",
+        "reuse": "代码复用",
+        "naming": "命名规范",
+        "comments": "注释质量",
+        "constants": "常量使用",
+        "complexity": "复杂度控制",
+        "visual": "视觉表现",
+        "smoothness": "操作流畅性",
+        "balance": "游戏平衡性",
+        "audio_animation": "音效与动画",
+    }
+
     for dimension in DIMENSIONS.values():
         subset = indicators[indicators["dimension"] == dimension]
         if subset.empty:
             continue
         pivot = subset.pivot_table(index="indicator", columns="model_short", values="normalized", aggfunc="mean")
-        pivot = pivot.loc[pivot.mean(axis=1).sort_values(ascending=True).index]
+        desired_order = indicator_orders.get(dimension)
+        if desired_order:
+            pivot = pivot.reindex(desired_order)
+        pivot = pivot.loc[pivot.index.dropna()]
+        pivot.index = [indicator_labels.get(name, name) for name in pivot.index]
         plt.figure(figsize=(8.5, max(3.8, len(pivot) * 0.42)))
-        ax = sns.heatmap(pivot, annot=True, fmt=".2f", cmap="mako", vmin=0, vmax=1, linewidths=0.5)
-        ax.set_title(f"{dimension} Indicator Diagnosis")
+        ax = sns.heatmap(
+            pivot,
+            annot=True,
+            fmt=".2f",
+            cmap="mako_r",
+            vmin=0,
+            vmax=1,
+            linewidths=0.5,
+        )
+        ax.set_title("")
         ax.set_xlabel("")
         ax.set_ylabel("")
         save_figure(out_dir / f"06_{safe_name(dimension).lower()}_indicator_heatmap.png")
@@ -388,6 +516,7 @@ def main() -> None:
 
     export_tables(df, indicators, out_dir)
     plot_overall_ranking(df, out_dir)
+    plot_overall_ranking_vertical(df, out_dir)
     plot_model_game_heatmap(df, out_dir)
     plot_dimension_profile(df, out_dir)
     plot_weighted_contributions(df, out_dir)
