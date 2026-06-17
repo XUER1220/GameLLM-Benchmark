@@ -1,8 +1,11 @@
 # Prompt Layout
 
-模型实际接收的任务文件固定为：
+Prompt 的维护源现在拆成两层：
 
-`prompts/<difficulty>/<game>/prompt.txt`
+- `prompts/main.md`：唯一主入口，包含公共规则、最终章节顺序和 `[PLACEHOLDER]` 占位符。
+- `prompts/specs/<difficulty>/<game>.md`：每个游戏的差异规格。
+
+流水线调用模型前会用 `prompt_builder.py` 静态拼接完整 prompt。`prompts/<difficulty>/<game>/prompt.txt` 是由 `python scripts/build_prompts.py` 生成的兼容产物，用于人工审阅和旧路径兼容，不是新的维护源。
 
 统一结构和编写口径见 `STRICT_PROMPT_TEMPLATE.md`。
 
@@ -21,4 +24,9 @@
 | hard | `roguelike_dungeon` | 固定双层地牢中必须按顺序激活符文 |
 | hard | `tower_defense` | 敌人具有双色护盾，塔型与护盾形成克制 |
 
-每个 `prompt.txt` 必须完整自包含。流水线不会拼接公共模板，因此公共执行契约也要写入每个文件。
+修改 `main.md` 或 `specs/` 后，先运行：
+
+```bash
+python scripts/build_prompts.py
+python scripts/check_prompt_contracts.py
+```

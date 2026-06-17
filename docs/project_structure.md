@@ -11,9 +11,11 @@
 | `config/games.yaml` | 启用的游戏 ID，按 `easy / medium / hard` 分组 |
 | `config/models.yaml` | 模型名和 provider |
 | `config/weights.yaml` | 四个评分维度的权重 |
-| `prompts/<difficulty>/<game>/prompt.txt` | 发送给模型的完整任务定义 |
+| `prompts/main.md` | prompt 主入口，包含公共规则、最终章节顺序和 `[PLACEHOLDER]` 占位符 |
+| `prompts/specs/<difficulty>/<game>.md` | 每个游戏的差异规格 |
+| `prompts/<difficulty>/<game>/prompt.txt` | 生成的完整 prompt 兼容产物 |
 
-任务规则只维护在 `prompt.txt`。不再保留空的 `games/standard.py`、空 `baseline.md` 或未接入流水线的重复任务定义。
+任务规则维护在 `main.md + specs`。`prompt.txt` 由 `python scripts/build_prompts.py` 生成，`run_pipeline.py` 调用模型前也会通过 `prompt_builder.py` 静态替换占位符生成完整 prompt。
 
 ## 2. Runtime Flow
 
@@ -21,10 +23,10 @@
 config/games.yaml
         |
         v
-prompts/<difficulty>/<game>/prompt.txt
+prompts/main.md + prompts/specs/<difficulty>/<game>.md
         |
         v
-run_pipeline.py -> llm_clients/*
+prompt_builder.py -> run_pipeline.py -> llm_clients/*
         |
         v
 data/raw/<run_id>/*.py
@@ -70,6 +72,7 @@ scripts/visualize_results.py -> analysis/figures/<run_id>/*
 | `python scripts/run_repeated.py --times 5 --plot` | 重复执行流水线并生成稳定性分析 |
 | `python scripts/visualize_results.py --run <run_id>` | 生成单次实验图表 |
 | `python scripts/visualize_repeated_results.py --manifest <path>` | 生成重复实验图表 |
+| `python scripts/build_prompts.py` | 从主入口占位符和游戏规格生成兼容 `prompt.txt` |
 | `python scripts/check_prompt_contracts.py` | 校验启用 prompt 的章节、公共约束、模糊词和固定地图尺寸 |
 
 ## 6. Removed Skeletons

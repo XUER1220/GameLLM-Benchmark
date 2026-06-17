@@ -5,11 +5,12 @@ from pathlib import Path
 
 import yaml
 
-from config import DATA_RAW_DIR, DATA_SCORES_DIR, DEFAULT_WEIGHTS, PROMPTS_DIR, ROOT_DIR
+from config import DATA_RAW_DIR, DATA_SCORES_DIR, DEFAULT_WEIGHTS, ROOT_DIR
 from evaluator.dimension1.dimension1_executable import evaluate_dimension1
 from evaluator.dimension2_functionality import evaluate_dimension2
 from evaluator.dimension3.dimension3_code_quality import evaluate_dimension3_code_quality
 from evaluator.dimension4.dimension4_ux import evaluate_dimension4_ux
+from prompt_builder import PromptBuildError, build_prompt
 
 
 def load_config(config_file: Path) -> dict:
@@ -222,14 +223,12 @@ def main():
     for game_info in all_games:
         difficulty = game_info["difficulty"]
         game_name = game_info["name"]
-        prompt_file = PROMPTS_DIR / difficulty / game_name / "prompt.txt"
 
-        if not prompt_file.exists():
-            print(f"[SKIP] 跳过 {game_name}，prompt 文件不存在")
+        try:
+            prompt = build_prompt(difficulty, game_name)
+        except PromptBuildError as exc:
+            print(f"[SKIP] 跳过 {game_name}，prompt 构建失败: {exc}")
             continue
-
-        with open(prompt_file, "r", encoding="utf-8") as f:
-            prompt = f.read()
 
         print(f"\n{'=' * 60}")
         print(f"游戏: {game_name} ({difficulty})")

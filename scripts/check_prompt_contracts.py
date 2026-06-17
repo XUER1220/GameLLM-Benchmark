@@ -1,28 +1,19 @@
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
 
 import yaml
 
-
 ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from prompt_builder import REQUIRED_SECTIONS, PromptBuildError, build_prompt, generated_prompt_path
+
 PROMPTS_DIR = ROOT_DIR / "prompts"
 GAMES_CONFIG = ROOT_DIR / "config" / "games.yaml"
-
-REQUIRED_SECTIONS = (
-    "任务身份",
-    "输出契约",
-    "坐标与时间",
-    "颜色表",
-    "布局与实体",
-    "输入",
-    "更新顺序",
-    "独特规则",
-    "绘制顺序与 HUD",
-    "禁止项",
-    "提交前检查",
-)
 
 REQUIRED_SNIPPETS = (
     "800x600",
@@ -67,12 +58,19 @@ def extract_map_blocks(text: str) -> list[list[str]]:
 
 
 def validate_prompt(difficulty: str, game: str) -> list[str]:
-    prompt_path = PROMPTS_DIR / difficulty / game / "prompt.txt"
+    prompt_path = generated_prompt_path(difficulty, game)
     if not prompt_path.exists():
         return [f"missing prompt: {prompt_path.relative_to(ROOT_DIR)}"]
 
-    text = prompt_path.read_text(encoding="utf-8")
+    try:
+        text = build_prompt(difficulty, game)
+    except PromptBuildError as exc:
+        return [f"{prompt_path.relative_to(ROOT_DIR)}: failed to build prompt: {exc}"]
     errors: list[str] = []
+
+    generated_text = prompt_path.read_text(encoding="utf-8")
+    if generated_text != text:
+        errors.append(f"{prompt_path.relative_to(ROOT_DIR)} is not up to date; run `python scripts/build_prompts.py`")
 
     for section in REQUIRED_SECTIONS:
         if text.count(section) != 1:
